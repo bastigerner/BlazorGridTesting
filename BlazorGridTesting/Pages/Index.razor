@@ -1,0 +1,66 @@
+﻿@page "/"
+
+<PageTitle>Index</PageTitle>
+
+<DataGrid   TItem=TestItem
+            Data=@testing
+            Bordered=true
+            Sortable=true
+            Filterable=true
+            ShowPager=false
+            PageSize=25
+            Hoverable=false
+            RowDoubleClicked=@RowDoubleClicked
+            DetailRowTrigger=@((item) => selectedPatches.Contains(item.ID))>
+        <DataGridColumns>
+            <DataGridColumn TItem=TestItem Field="Name" Filterable="false">
+                <DisplayTemplate>
+                    <div style="text-align: center;">
+                        <Button Clicked="@(() => OnRowPatchesClicked(context))"><Icon Name="@((selectedPatches.Contains(context.ID)) ? "fa-angle-down" : "fa-angle-right")" /></Button>
+                    </div>
+                </DisplayTemplate>
+            </DataGridColumn>
+            <DataGridColumn TItem=TestItem Field="Name" />
+            <DataGridColumn TItem=TestItem Field="ID" />
+        </DataGridColumns>
+        <DetailRowTemplate>
+            <Icon Name=IconName.BirthdayCake Style="width: 10em;" />
+        </DetailRowTemplate>
+</DataGrid>
+
+@code {
+    List<TestItem> testing = new List<TestItem>();
+    private List<int> selectedPatches = new();
+
+    protected override void OnInitialized()
+    {
+        for (int i = 0; i < 20; i++)
+            testing.Add(new TestItem("Test " + i, i));
+    }
+
+    protected void RowDoubleClicked(DataGridRowMouseEventArgs<TestItem> temp)
+    {
+        var patch = temp.Item;
+        OnRowPatchesClicked(patch);
+    }
+
+    public void OnRowPatchesClicked(TestItem patchPolicy)
+    {
+        if (selectedPatches.Contains(patchPolicy.ID))
+            selectedPatches.Remove(patchPolicy.ID);
+        else
+            selectedPatches.Add(patchPolicy.ID);
+    }
+
+    public class TestItem
+    {
+        public string Name { get; set; }
+        public int ID { get; set; }
+
+        public TestItem(string Name, int ID)
+        {
+            this.Name = Name;
+            this.ID = ID;
+        }
+    }
+}
